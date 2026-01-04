@@ -3,293 +3,138 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Paste → Pastefy.app (Fixed!)</title>
-    <meta name="description" content="Reliable paste code + image thumbnail to pastefy.app"/>
-    
+    <title>Paste + Image → Catbox</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #0f0f1a;
-            color: #e0e0ff;
-            min-height: 100vh;
-            padding: 2rem;
-            background-image: 
-                radial-gradient(circle at 25% 15%, rgba(100,100,255,0.08) 0%, transparent 25%),
-                radial-gradient(circle at 75% 85%, rgba(180,100,255,0.06) 0%, transparent 35%);
+            font-family: system-ui, sans-serif;
+            background: #0f0f1a; color: #e0e0ff;
+            min-height: 100vh; padding: 2rem;
         }
         .container { max-width: 900px; margin: 0 auto; }
-        h1 {
-            font-size: 2.6rem;
-            text-align: center;
-            margin-bottom: 0.4rem;
-            background: linear-gradient(90deg, #10b981, #7dd3fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .subtitle { 
-            color: #94a3b8; 
-            text-align: center; 
-            margin-bottom: 2rem; 
-            font-size: 1.1rem;
-            background: rgba(16,185,129,0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #10b981;
-        }
-        
-        .editor-wrapper {
-            border-radius: 12px;
-            overflow: hidden;
-            background: #1e1e38;
-            border: 1px solid #334155;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
-            margin-bottom: 1rem;
-        }
-        #codeInput {
-            width: 100%;
-            min-height: 320px;
-            padding: 1.5rem;
-            background: #111827;
-            color: #e0e0ff;
-            font-family: 'Consolas', monospace;
-            font-size: 15px;
-            line-height: 1.45;
-            border: none;
-            resize: vertical;
-            outline: none;
-        }
-        
-        .upload-area {
-            padding: 1.2rem 1.5rem;
-            background: #172033;
-            border-top: 1px solid #2d3748;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-        }
-        .upload-area label {
-            background: #10b981;
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .upload-area label:hover { background: #059669; transform: translateY(-1px); }
-        #thumbnailPreview {
-            max-height: 120px;
-            max-width: 180px;
-            border-radius: 6px;
-            object-fit: cover;
-            border: 2px solid #10b981;
-            display: none;
-        }
-        #fileName { color: #94a3b8; font-size: 0.95rem; flex: 1; }
-        
-        .controls {
-            padding: 1rem 1.5rem;
-            background: #172033;
-            border-top: 1px solid #2d3748;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        button {
-            background: linear-gradient(90deg, #10b981, #34d399);
-            color: white;
-            border: none;
-            padding: 0.7rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 10px 25px -5px rgba(16,185,129,0.45);
-        }
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        #status { 
-            color: #94a3b8; 
-            font-size: 0.95rem; 
-            flex: 1;
-            font-family: monospace;
-            min-height: 1.4em;
-        }
-        .success { color: #10b981 !important; }
+        h1 { text-align: center; font-size: 2.5rem; margin-bottom: 0.5rem;
+             background: linear-gradient(90deg, #a78bfa, #7dd3fc);
+             -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { text-align: center; color: #94a3b8; margin-bottom: 2rem; }
+        .editor-wrapper { border-radius: 12px; overflow: hidden; background: #1e1e38; border: 1px solid #334155; }
+        #codeInput { width: 100%; min-height: 300px; padding: 1.5rem; background: #111827; color: #e0e0ff;
+                     font-family: 'Consolas', monospace; font-size: 15px; border: none; resize: vertical; }
+        .upload-area { padding: 1rem 1.5rem; background: #172033; border-top: 1px solid #2d3748; display: flex;
+                        gap: 1rem; flex-wrap: wrap; align-items: center; }
+        label { background: #334155; color: white; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; }
+        label:hover { background: #475569; }
+        #thumbnailPreview { max-height: 100px; border-radius: 6px; display: none; }
+        .controls { padding: 1rem 1.5rem; background: #172033; border-top: 1px solid #2d3748;
+                    display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+        button { background: linear-gradient(90deg, #7c3aed, #3b82f6); color: white; border: none;
+                 padding: 0.7rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        button:hover { transform: translateY(-2px); }
+        #status { color: #94a3b8; flex: 1; }
+        .success { color: #34d399 !important; }
         .error { color: #f87171 !important; }
-        .loading { color: #7dd3fc !important; }
-        
-        footer {
-            margin-top: 3rem;
-            text-align: center;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-        a { color: #a78bfa; text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        footer { margin-top: 3rem; text-align: center; color: #64748b; font-size: 0.9rem; }
+        a { color: #a78bfa; }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h1>✅ Pastefy Quick (Fixed)</h1>
-    <p class="subtitle">No account needed • Upload image → paste code → instant pastefy.app link</p>
+    <h1>Quick Paste + Image</h1>
+    <p class="subtitle">Paste code/text + upload image → get shareable Catbox links</p>
 
     <div class="editor-wrapper">
-        <textarea 
-            id="codeInput" 
-            placeholder="Paste your code/snippet/text here...&#10;&#10;💡 Image auto-becomes thumbnail/preview on top&#10;💡 Ctrl+Enter to create paste"
-            spellcheck="false"
-            autofocus
-        ></textarea>
+        <textarea id="codeInput" placeholder="Paste your code / text here..."></textarea>
 
         <div class="upload-area">
-            <label for="thumbnailInput">📸 Add Thumbnail Image (optional)</label>
-            <input type="file" id="thumbnailInput" accept="image/*" hidden>
-            <img id="thumbnailPreview" alt="Preview"/>
-            <span id="fileName">No image</span>
+            <label for="fileInput">📷 Add Image</label>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+            <img id="thumbnailPreview" alt="Preview">
+            <span id="fileName">No image selected</span>
         </div>
 
         <div class="controls">
-            <button id="createBtn">🚀 Create Pastefy Link</button>
-            <span id="status">Ready! (uses public file upload API)</span>
+            <button id="createBtn">Create & Copy Links</button>
+            <span id="status">Ready...</span>
         </div>
     </div>
 
-    <footer>
-        Fixed: Uses <strong>/api/v1/pastes</strong> (public) • 
-        <a href="https://pastefy.app" target="_blank">pastefy.app</a> • 
-        <a href="https://docs.pastefy.app/" target="_blank">docs</a>
-    </footer>
+    <footer>Made with Catbox.moe • No account needed • <a href="https://catbox.moe" target="_blank">catbox.moe</a></footer>
 </div>
 
 <script>
 const textarea = document.getElementById('codeInput');
-const fileInput = document.getElementById('thumbnailInput');
+const fileInput = document.getElementById('fileInput');
 const preview = document.getElementById('thumbnailPreview');
 const fileNameEl = document.getElementById('fileName');
 const btn = document.getElementById('createBtn');
 const status = document.getElementById('status');
 
-let selectedImageBase64 = null;
-let selectedFileName = null;
+let selectedFile = null;
 
-fileInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file || !file.type.startsWith('image/')) {
-        fileNameEl.textContent = "Select an image";
-        preview.style.display = 'none';
-        return;
-    }
-
-    selectedFileName = file.name;
-    fileNameEl.textContent = `Image: ${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`;
-
-    try {
-        selectedImageBase64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-        preview.src = selectedImageBase64;
+fileInput.addEventListener('change', e => {
+    selectedFile = e.target.files[0];
+    if (selectedFile) {
+        fileNameEl.textContent = selectedFile.name;
+        preview.src = URL.createObjectURL(selectedFile);
         preview.style.display = 'block';
-    } catch (err) {
-        fileNameEl.textContent = "Error loading image";
     }
 });
 
-async function createPaste(retries = 2) {
-    const code = textarea.value.trim();
-    if (!code && !selectedImageBase64) {
-        status.textContent = "Add code OR image first";
-        return;
-    }
+async function uploadToCatbox(file, type = 'file') {
+    const formData = new FormData();
+    formData.append(type, file);
+    formData.append('reqtype', type === 'url' ? 'url' : 'fileupload');
 
-    const btn = document.getElementById('createBtn');
-    const originalText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = 'Creating...';
-    status.textContent = 'Uploading...';
-    status.className = 'loading';
+    const res = await fetch('https://catbox.moe/resources/upload.php', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.text();
+}
+
+async function createPaste() {
+    const text = textarea.value.trim();
+    status.textContent = 'Uploading...'; status.className = '';
+
+    let imageUrl = '';
+    let textUrl = '';
 
     try {
-        // Build content: image markdown + code
-        let content = code;
-        if (selectedImageBase64) {
-            content = `![${selectedFileName || 'Preview'}](${selectedImageBase64})\n\n\`\`\`\n${code || ' '}\n\`\`\``;
+        // Upload image first if present
+        if (selectedFile) {
+            imageUrl = await uploadToCatbox(selectedFile);
+            if (!imageUrl.startsWith('http')) throw new Error('Image upload failed');
         }
 
-        // Use FormData for v1 public API
-        const formData = new FormData();
-        formData.append('f', new Blob([content], { type: 'text/plain;charset=utf-8' }), 
-                       selectedFileName || 'paste.txt');
-
-        const response = await fetch('https://pastefy.app/api/v1/pastes', {
-            method: 'POST',
-            body: formData
-        });
-
-        const statusText = `${response.status} ${response.statusText}`;
-        
-        let data;
-        try {
-            data = await response.text(); // v1 returns HTML redirect or plain text
-        } catch {}
-
-        if (!response.ok) {
-            throw new Error(`${statusText}: ${data?.substring(0, 200)}`);
+        // Upload text if present
+        if (text) {
+            const textBlob = new Blob([text], { type: 'text/plain' });
+            const textFile = new File([textBlob], 'paste.txt', { type: 'text/plain' });
+            textUrl = await uploadToCatbox(textFile);
+            if (!textUrl.startsWith('http')) throw new Error('Text upload failed');
         }
 
-        // v1 returns HTML with redirect URL or direct ID
-        let url = null;
-        if (data.includes('pastefy.app/')) {
-            const match = data.match(/https:\/\/pastefy\.app\/([a-zA-Z0-9]+)/);
-            if (match) url = `https://pastefy.app/${match[1]}`;
-        }
-        
-        if (!url && response.url.includes('pastefy.app/')) {
-            url = response.url; // Use final redirect URL
-        }
+        let result = '';
+        if (imageUrl) result += `Image: ${imageUrl}\n`;
+        if (textUrl) result += `Text/Code: ${textUrl}\n`;
 
-        if (!url) throw new Error('No paste URL found in response');
-
-        status.innerHTML = `✅ <a href="${url}" target="_blank">${url}</a>`;
+        status.innerHTML = `Done!<br><a href="${imageUrl||textUrl}" target="_blank">${result.trim()}</a>`;
         status.className = 'success';
-        navigator.clipboard.writeText(url);
 
+        navigator.clipboard.writeText(result.trim()).catch(() => {});
     } catch (err) {
         console.error(err);
-        if (retries > 0) {
-            status.textContent = `Temp error, retrying... (${retries})`;
-            await new Promise(r => setTimeout(r, 2000));
-            return createPaste(retries - 1);
-        }
-        status.textContent = `❌ ${err.message}`;
+        status.textContent = 'Error: ' + (err.message || 'Try again');
         status.className = 'error';
-    } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
     }
 }
 
-textarea.addEventListener('keydown', (e) => {
+btn.addEventListener('click', createPaste);
+textarea.addEventListener('keydown', e => {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         createPaste();
     }
 });
-
-btn.addEventListener('click', createPaste);
 </script>
 </body>
 </html>
